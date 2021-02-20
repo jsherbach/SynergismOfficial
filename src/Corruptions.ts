@@ -216,6 +216,14 @@ const corruptionLoadoutSaveLoad = (save = true, loadout = 1) => {
     }
 }
 
+// Ensure the currently active corruptions are properly displayed.
+export const corruptionDisplayUpdate = () => {
+    const rows = document.getElementsByClassName("corruptionStatRow");
+    for (let i = 0; i < rows.length; i++) {
+        corruptionDisplay(i + 1);
+    }
+}
+
 export const corruptionCleanseConfirm = () => {
     const corrupt = document.getElementById('corruptionCleanseConfirm');
     corrupt.style.visibility = 'visible';

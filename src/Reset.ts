@@ -20,6 +20,7 @@ import type {
 import { challengeRequirement } from './Challenges';
 import { Synergism } from './Events';
 import { resetNames } from './types/Synergism';
+import { corruptionDisplayUpdate } from './Corruptions';
 
 let repeatreset: ReturnType<typeof setTimeout>;
 
@@ -593,6 +594,7 @@ export const reset = (input: resetNames, fast = false, from = 'unknown') => {
             }
         }
         player.usedCorruptions = Array.from(player.prototypeCorruptions)
+        corruptionDisplayUpdate()
     }
 
     //Always unlocks
