@@ -117,6 +117,12 @@ export const corruptionDisplay = (index: number) => {
     }
 }
 
+export const updateDisplayedCorruptions = () => {
+    for (let i = 1; i <= 10; i++) {
+        corruptionDisplay(i);
+    }
+}
+
 export const corruptionButtonsAdd = () => {
     const rows = document.getElementsByClassName("corruptionStatRow");
     for (let i = 0; i < rows.length; i++) {
