@@ -26,7 +26,7 @@ import { autoUpgrades } from './Automation';
 import { redeemShards } from './Runes';
 import { checkVariablesOnLoad } from './CheckVariables';
 import { updateCubeUpgradeBG } from './Cubes';
-import { updateDisplayedCorruptions, corruptionLoadoutTableUpdate, corruptionButtonsAdd, corruptionLoadoutTableCreate } from './Corruptions';
+import { corruptionLoadoutTableUpdate, corruptionButtonsAdd, corruptionLoadoutTableCreate } from './Corruptions';
 import { generateEventHandlers } from './EventListeners';
 import * as Plugins from './Plugins/Plugins';
 import { addTimers, automaticTools } from './Helper';
@@ -1219,7 +1219,6 @@ if (player.achievements[102] == 1)document.getElementById("runeshowpower4").text
             corruptionLoadoutTableUpdate(i);
         }
         showCorruptionStatsLoadouts()
-        updateDisplayedCorruptions()
 
         for (let j = 1; j <= 5; j++) {
             const ouch = document.getElementById("tesseractAutoToggle" + j);
