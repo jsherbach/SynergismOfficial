@@ -58,7 +58,7 @@ export const toggleTabs = (name: keyof typeof tabNumberConst) => {
         }
     } else { // handle settings tab
         // The first getElementById makes sure that it still works if other tabs start using the subtabSwitcher class
-        const btns = document.getElementById("settings").getElementsByClassName("subtabSwitcher")[0].children
+        const btns = document.querySelectorAll('#settings .subtabSwitcher > button');
         for (let i = 0; i < btns.length; i++) {
             if (btns[i].classList.contains("buttonActive")) {
                 player.subtabNumber = i
@@ -122,34 +122,24 @@ export const toggleChallenges = (i: number, auto = false) => {
     }
 }
 
-export const toggleBuyAmount = (quantity: number, type: string) => {
-    player[type + 'buyamount'] = quantity
-    let a = ['one', 'ten', 'hundred', 'thousand'][quantity.toString().length - 1];
+type ToggleBuy = 'coin' | 'crystal' | 'mythos' | 'particle' | 'offering' | 'tesseract';
 
-    const c = type + a
-    let d = ""
-    d = d + c
+export const toggleBuyAmount = (quantity: 1 | 10 | 100 | 1000, type: ToggleBuy) => {
+    player[`${type}buyamount` as const] = quantity;
+    const a = ['one', 'ten', 'hundred', 'thousand'][quantity.toString().length - 1];
 
-    document.getElementById(d).style.backgroundColor = "Green";
+    document.getElementById(`${type}${a}`).style.backgroundColor = "Green";
     if (quantity !== 1) {
-        a = "one"
-        d = type + a
-        document.getElementById(d).style.backgroundColor = "Black"
+        document.getElementById(`${type}one`).style.backgroundColor = "Black"
     }
     if (quantity !== 10) {
-        a = "ten"
-        d = type + a
-        document.getElementById(d).style.backgroundColor = "Black"
+        document.getElementById(`${type}ten`).style.backgroundColor = "Black"
     }
     if (quantity !== 100) {
-        a = "hundred"
-        d = type + a
-        document.getElementById(d).style.backgroundColor = "Black"
+        document.getElementById(`${type}hundred`).style.backgroundColor = "Black"
     }
     if (quantity !== 1000) {
-        a = "thousand"
-        d = type + a
-        document.getElementById(d).style.backgroundColor = "Black"
+        document.getElementById(`${type}thousand`).style.backgroundColor = "Black"
     }
 }
 
@@ -582,31 +572,55 @@ const setActiveSettingScreen = async (subtab: string, clickedButton: HTMLButtonE
         refreshStats();
     } else if (subtab === 'creditssubtab') {
         const credits = document.getElementById('creditList');
+        const artists = document.getElementById('artistList');
 
-        if (credits.childElementCount > 0)
+        if (credits.childElementCount > 0 || artists.childElementCount > 0)
             return;
 
         try {
-            const r = await fetch('https://api.github.com/repos/pseudo-corp/SynergismOfficial/contributors');
+            const r = await fetch('https://api.github.com/repos/pseudo-corp/SynergismOfficial/contributors', {
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
             const j = await r.json();
 
             for (const contributor of j) { 
                 const div = document.createElement('div');
                 div.classList.add('credit');
 
-                const img = document.createElement('img');
+                const img = new Image(32, 32);
                 img.src = contributor.avatar_url;
                 img.alt = contributor.login;
-                img.height = img.width = 32;
 
                 const a = document.createElement('a');
-                a.href = contributor.html_url;
+                a.href = `https://github.com/Pseudo-Corp/SynergismOfficial/commits/ts?author=${contributor.login}`;
                 a.textContent = contributor.login;
                 
                 div.appendChild(img);
                 div.appendChild(a);
 
                 credits.appendChild(div);
+            }
+        } catch (e) {
+            credits.appendChild(document.createTextNode(e.toString()));
+        }
+
+        try {
+            const r = await fetch('https://api.github.com/gists/01917ff476d25a141c5bad38340cd756', {
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            const j = await r.json();
+            const f = JSON.parse(j.files['synergism_artists.json'].content);
+
+            for (const user of f) {
+                const p = document.createElement('p');
+                p.textContent = user;
+
+                artists.appendChild(p);
             }
         } catch (e) {
             credits.appendChild(document.createTextNode(e.toString()));

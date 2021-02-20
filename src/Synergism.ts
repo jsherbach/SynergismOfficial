@@ -2,7 +2,7 @@ import Decimal from 'break_infinity.js';
 import LZString from 'lz-string';
 
 import { isDecimal, getElementById, sortWithIndeces, sumContents } from './Utility';
-import { Globals as G } from './Variables';
+import { blankGlobals, Globals as G } from './Variables';
 import { CalcECC, getChallengeConditions, challengeDisplay, highestChallengeRewards, challengeRequirement, runChallengeSweep } from './Challenges';
 
 import type { Player } from './types/Synergism';
@@ -24,15 +24,15 @@ import { reset } from './Reset';
 import { buyMax, buyAccelerator, buyMultiplier, boostAccelerator, buyCrystalUpgrades, buyParticleBuilding, getReductionValue, getCost, buyRuneBonusLevels, buyTesseractBuilding, getTesseractCost } from './Buy';
 import { autoUpgrades } from './Automation';
 import { redeemShards } from './Runes';
-import { checkVariablesOnLoad } from './CheckVariables';
 import { updateCubeUpgradeBG } from './Cubes';
 import { corruptionLoadoutTableUpdate, corruptionButtonsAdd, corruptionLoadoutTableCreate } from './Corruptions';
 import { generateEventHandlers } from './EventListeners';
 import * as Plugins from './Plugins/Plugins';
 import { addTimers, automaticTools } from './Helper';
-import { LegacyShopUpgrades } from './types/LegacySynergism';
+//import { LegacyShopUpgrades } from './types/LegacySynergism';
 
 import './Logger';
+import { checkVariablesOnLoad } from './CheckVariables';
 
 /**
  * Whether or not the current version is a testing version or a main version.
@@ -40,19 +40,21 @@ import './Logger';
  */
 export const isTesting = true;
 
-export const intervalHold: ReturnType<typeof setTimeout>[] = [];
+export const intervalHold = new Set<ReturnType<typeof setInterval>>();
 export const interval = new Proxy(setInterval, {
     apply(target, thisArg, args) {
         const set = target.apply(thisArg, args);
-        intervalHold.push(set);
+        intervalHold.add(set);
         return set;
     }
 });
 
 export const clearInt = new Proxy(clearInterval, {
     apply(target, thisArg, args) {
-        const id = args[0];
-        intervalHold.splice(intervalHold.indexOf(id), 1); // remove from intervalHold array
+        const id = args[0] as ReturnType<typeof setInterval>;
+        if (intervalHold.has(id))
+            intervalHold.delete(id);
+
         return target.apply(thisArg, args);
     }
 });
@@ -295,20 +297,6 @@ export const player: Player = {
         33: false,
     },
 
-    resourceGenerators: {
-        diamonds: false,
-        mythos: false,
-    },
-
-    keepUpgrades: {
-        coinUpgrades: false,
-        prestigeUpgrades: false,
-        crystalUpgrades: false,
-        transcendUpgrades: false,
-        autobuyers: false,
-        generators: false
-    },
-
     challengecompletions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     highestchallengecompletions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     challenge15Exponent: 0,
@@ -322,7 +310,6 @@ export const player: Player = {
     },
     researchPoints: 0,
     obtainiumtimer: 0,
-    obtainiumlocktoggle: false,
     obtainiumpersecond: 0,
     maxobtainiumpersecond: 0,
     maxobtainium: 0,
@@ -374,7 +361,6 @@ export const player: Player = {
     runelevels: [1, 1, 1, 1, 1],
     runeexp: [0, 0, 0, 0, 0,],
     runeshards: 0,
-    offeringlocktoggle: false,
     maxofferings: 0,
     offeringpersecond: 0,
 
@@ -390,7 +376,6 @@ export const player: Player = {
     fastestprestige: 9999999999,
     fastesttranscend: 99999999999,
     fastestreincarnate: 999999999999,
-    fastestAscend: 999999999999,
 
     resettoggle1: 1,
     resettoggle2: 1,
@@ -550,16 +535,6 @@ export const player: Player = {
     autoAscendMode: "c10Completions",
     autoAscendThreshold: 1,
     roombaResearchIndex: 0,
-    cubesThisAscension: {
-        "challenges": 0,
-        "reincarnation": 0,
-        "ascension": 0,
-        "maxCubesPerSec": 0,
-        "maxAllTime": 0,
-        "cpsOnC10Comp": 0,
-        "tesseracts": 0,
-        "hypercubes": 0
-    },
     ascStatToggles: { // false here means show per second
         1: false,
         2: false,
@@ -599,9 +574,7 @@ export const player: Player = {
     autoTesseracts: [false, false, false, false, false, false],
 
     saveString: "Synergism-$VERSION$-$TIME$.txt",
-    brokenfile1: false,
     exporttest: false,
-    kongregatetest: "NO!",
 
     dayCheck: null,
     dayTimer: 0,
@@ -650,6 +623,9 @@ export const loadSynergy = (): void => {
             value: player
         });
     }
+
+    Object.assign(G, { ...blankGlobals });
+
     if (data) {
         const hasOwnProperty = {}.hasOwnProperty;
 
@@ -735,6 +711,12 @@ export const loadSynergy = (): void => {
             player.loaded10101 = false;
         }
 
+        //Fix dumb shop stuff
+        //First, if shop isn't even defined we just define it as so
+        if(data.shopUpgrades === undefined){
+            player.shopUpgrades = Object.assign({}, blankSave.shopUpgrades);
+        }
+
         if (player.researches[76] === undefined) {
             player.codes.set(13, false);
             player.researches.push(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
@@ -743,8 +725,6 @@ export const loadSynergy = (): void => {
             player.maxobtainium = player.researchPoints;
             player.researchPoints += 51200 * player.researches[50];
             player.researches[50] = 0;
-            player.offeringlocktoggle = false;
-            player.obtainiumlocktoggle = false;
         }
 
         player.maxofferings = player.maxofferings || 0;
@@ -770,7 +750,6 @@ export const loadSynergy = (): void => {
             player.sacrificeTimer = 0;
             player.loaded1009 = true;
             player.codes.set(18, false);
-            player.shopUpgrades = Object.assign({}, blankSave.shopUpgrades);
         }
         if (!data.loaded1009hotfix1) {
             player.loaded1009hotfix1 = true;
@@ -809,12 +788,12 @@ export const loadSynergy = (): void => {
             player.researches[92] = 0;
         }
 
-        const shop = data.shopUpgrades as LegacyShopUpgrades & Player['shopUpgrades'];
+        //const shop = data.shopUpgrades as LegacyShopUpgrades & Player['shopUpgrades'];
         if (
             data.achievements[169] === undefined || 
             player.achievements[169] === undefined || 
-            (shop.antSpeed === undefined && shop.antSpeedLevel === undefined) || 
-            (shop.antSpeed === undefined && typeof shop.antSpeedLevel === 'undefined') || 
+        //    (shop.antSpeed === undefined && shop.antSpeedLevel === undefined) || 
+        //    (shop.antSpeed === undefined && typeof shop.antSpeedLevel === 'undefined') || 
             data.loaded1010 === undefined || 
             data.loaded1010 === false
         ) {
@@ -875,8 +854,8 @@ export const loadSynergy = (): void => {
             player.upgrades[80] = 0;
 
 
-            player.shopUpgrades.antSpeed = 0;
-            player.shopUpgrades.shopTalisman = 0;
+        //    player.shopUpgrades.antSpeed = 0;
+        //    player.shopUpgrades.shopTalisman = 0;
 
             player.antUpgrades = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
@@ -969,14 +948,6 @@ export const loadSynergy = (): void => {
                 talismanBonus: 0,
                 globalSpeed: 0
             }
-            player.cubesThisAscension.challenges = 0;
-            player.cubesThisAscension.reincarnation = 0;
-            player.cubesThisAscension.ascension = 0;
-            player.cubesThisAscension.maxCubesPerSec = 0;
-            player.cubesThisAscension.maxAllTime = 0;
-            player.cubesThisAscension.cpsOnC10Comp = 0;
-            player.cubesThisAscension.tesseracts = 0;
-            player.cubesThisAscension.hypercubes = 0;
         }
         if (data.autoAntSacTimer === undefined) {
             player.autoAntSacTimer = 900;
@@ -1090,14 +1061,6 @@ export const loadSynergy = (): void => {
         getElementById<HTMLInputElement>("saveStringInput").value = player.saveString
 
         player.wowCubes = player.wowCubes || 0;
-        if (!player.cubesThisAscension.maxAllTime) // Initializes the value if it doesn't exist
-            player.cubesThisAscension.maxAllTime = 0
-        if (!player.cubesThisAscension.cpsOnC10Comp)
-            player.cubesThisAscension.cpsOnC10Comp = 0
-        if (!player.cubesThisAscension.tesseracts)
-            player.cubesThisAscension.tesseracts = 0
-        if (!player.cubesThisAscension.hypercubes)
-            player.cubesThisAscension.hypercubes = 0
 
         for (let j = 1; j < 126; j++) {
             upgradeupdate(j);
@@ -1529,21 +1492,6 @@ export const formatTimeShort = (seconds: number, msMaxSeconds?: number): string 
         ((msMaxSeconds && seconds < msMaxSeconds)
             ? "." + (Math.floor((seconds % 1) * 1000).toString().padStart(3, '0'))
             : '') + "s";
-}
-
-export const updateCubesPerSec = (): void => {
-    const c = player.cubesThisAscension.challenges, 
-          r = player.cubesThisAscension.reincarnation,
-          a = player.cubesThisAscension.ascension;
-
-    if (player.challengecompletions[10] > 0) {
-        if (player.challengecompletions[10] === 1) {
-            player.cubesThisAscension.cpsOnC10Comp = (c + r + a) / player.ascensionCounter;
-        }
-
-        player.cubesThisAscension.maxCubesPerSec = Math.max(player.cubesThisAscension.maxCubesPerSec, (c + r + a) / player.ascensionCounter)
-        player.cubesThisAscension.maxAllTime = Math.max(player.cubesThisAscension.maxAllTime, player.cubesThisAscension.maxCubesPerSec)
-    }
 }
 
 export const updateAllTick = (): void => {
@@ -2453,7 +2401,6 @@ export const resetCheck = (i: string, manual = true, leaving = false): void => {
                     challengeDisplay(y, false)
                     updateChallengeLevel(y)
                     highestChallengeRewards(q, player.highestchallengecompletions[q])
-                    updateCubesPerSec()
                     calculateCubeBlessings();
                 }
 
@@ -2519,7 +2466,6 @@ export const resetCheck = (i: string, manual = true, leaving = false): void => {
             while (player.challengecompletions[q] > player.highestchallengecompletions[q]) {
                 player.highestchallengecompletions[q] += 1;
                 highestChallengeRewards(q, player.highestchallengecompletions[q])
-                updateCubesPerSec()
                 calculateHypercubeBlessings();
                 calculateTesseractBlessings();
                 calculateCubeBlessings();
@@ -2580,7 +2526,10 @@ export const resetCheck = (i: string, manual = true, leaving = false): void => {
             }
         }
         if (r !== 0) {
-            player.currentChallenge.reincarnation = 0;
+            // bandaid
+            if (typeof player.currentChallenge === 'string') {
+                player.currentChallenge = { ...blankSave.currentChallenge };
+            }
         }
         if (t !== 0) {
             player.currentChallenge.transcension = 0;
@@ -3017,8 +2966,14 @@ function tack(dt: number) {
         if (player.achievements[173] === 1) {
             automaticTools("antSacrifice", dt);
         }
+
+      /*Triggers automatic obtainium gain if research [2x11] is unlocked,
+        Otherwise it just calculates obtainium multiplier values. */
         if (player.researches[61] === 1) {
             automaticTools("addObtainium", dt)
+        }
+        else {
+            calculateObtainium();
         }
 
         //Automatically tries and buys researches lol
@@ -3387,7 +3342,7 @@ window.addEventListener('load', () => {
     }
 
     const ver = document.getElementById('versionnumber');
-    ver && (ver.textContent = `You're Testing v${player.version} - Seal of the Merchant [Last Update: 6:00PM UTC-8 30-Jan-2021]. Savefiles cannot be used in live!`);
+    ver && (ver.textContent = `You're Testing v${player.version} - Seal of the Merchant [Last Update: 6:15PM UTC-8 08-Feb-2021]. Savefiles cannot be used in live!`);
     document.title = 'Synergism v' + player.version;
 
     const dec = LZString.decompressFromBase64(localStorage.getItem('Synergysave2'));
@@ -3416,5 +3371,3 @@ window.addEventListener('load', () => {
         changeTabColor();
     }, 0);
 });
-
-export default player;

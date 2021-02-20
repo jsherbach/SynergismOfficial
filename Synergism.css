@@ -105,7 +105,7 @@ a {color: white;}
 }
 #preload {
 	position:absolute;
-	z-index: 2
+	z-index: 2;
 }
 #offlineTimer{
 	position:absolute;
@@ -145,13 +145,6 @@ a {color: white;}
 	height: 30px;
 	background-color: green;
 	z-index: 4;
-}
-#resourcestable {
-	position: absolute;
-	top: 20px;
-	left: 11%;
-	border-collapse: collapse;
-	padding: 0;
 }
 
 #resetrow {
@@ -253,45 +246,20 @@ nav li {
 	color: red;
 }
 
-.buildingTabs {
+.subTabWrapper {
+	display: flex;
+	flex-direction: row;
+	margin-left: 8.75%;
+	margin-top: 10px;
+}
+
+.subTabWrapper > button {
 	height: 30px;
 	width: 150px;
 	text-align: center;
+	margin-right: 17px;
 }
 
-
-
-#buildingrow1 {
-	position:absolute;
-	position: relative;
-	padding: 0;
-	border: 1px solid gold;
-}
-#switchToCoinBuilding{
-	position: absolute;
-	top: 178px;
-	left: 8.75%;
-}
-#switchToDiamondBuilding{
-	position: absolute;
-	top: 178px;
-	left: 20.75%;
-}
-#switchToMythosBuilding{
-	position: absolute;
-	top: 178px;
-	left: 32.75%;
-}
-#switchToParticleBuilding{
-	position: absolute;
-	top: 178px;
-	left: 44.75%;
-}
-#switchToTesseractBuilding{	
-	position: absolute;	
-	top: 178px;	
-	left: 56.75%;	
-}
 #buyamountcoin {
 	position: absolute;
 	padding: 0;
@@ -333,51 +301,44 @@ nav li {
 	color: gold;
 }
 
-#upgradesGrid {
+#upgradesFlex {
+	display: flex;
+	flex-direction: row;
+	width: 90%;
+	margin-left: 3.5%;
+	margin-top: 4%;
+}
+
+#upgradesFlex > div {
 	display: flex;
 	flex-direction: column;
-	align-content: flex-start;
+	width: calc(100% / 6);
+	align-items: center;
 }
 
-#upgradesGrid > #upgradesTexts > p,
-#upgradesGrid > #upgradesImages > p {
-	width: 16.666666666%;
-	padding: 0;
-	margin: 0;
+#upgradesFlex > div > img {
+	width: 32px;
+	height: 32px;
 }
 
-#upgradesImages {
-	margin-top: 4%;
-	display: flex;
-	flex-direction: row;
-	justify-content: space-evenly;
+#upgradesFlex > div > p {
+	margin-top: 5px;
+	margin-bottom: 15%;
 }
 
-#upgradesTexts {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-evenly;
+#upgradesFlex > div > table {
+	height: 182px;
 }
 
-#upgradesrow2 {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-around;
-	margin-top: 2%;
-}
-
-#shoptogglerow {
-	display: grid;
-	grid-template-columns: repeat(6, 1fr);
-	margin-top: 10px;
-	justify-items: center;
-}
-
-#shoptogglerow > button {
+#upgradesFlex > div > button {
 	width: 80px;
 	height: 30px;
 }
 
+#shoptogglecoin { grid-column-start: 1; }
+#shoptoggleprestige { grid-column-start: 2; }
+#shoptoggletranscend { grid-column-start: 3; }
+#shoptogglegenerator { grid-column-start: 4; }
 #particleAutoUpgrade { grid-column-start: 6; }
 
 #upgradesrow3 {
@@ -402,15 +363,6 @@ nav li {
 	position: relative;
 	padding: 0;
 	text-align: center;
-}
-
-#submitstats {
-	position: absolute;
-	top: 241px;
-	width: 225px;
-	height: 30px;
-	left: 25%;
-	margin-left: -112.5px;
 }
 
 /* Settings settings sub tab */
@@ -494,7 +446,7 @@ nav li {
 }
 
 .buttonRow {
-	margin-top: 65px;
+	margin-top: 30px;
 	margin-left: 8.5%;
 }
 
@@ -569,19 +521,10 @@ nav li {
 	color: whitesmoke;
 }
 
-#achievementprogress {
-	position: absolute;
-	top: 20px;
-	left: 46.75%;
-	width: 300px;
-	margin-left: -150px;
-}
-
 #achievementstable {
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
-	margin-top: 4%;
 }
 
 #achievementinfo {
@@ -1628,57 +1571,96 @@ nav li {
 	height: 40px;
 }
 
-#retrybutton {
-	position: absolute;
-	width: 70px;
-	top: 60px;
-	left: 50%;
-	margin-left: -35px;
-}
-
 #shop {
 	position: relative;
 	padding: 0;
 	text-align: center;
 }
 
+#actualWrapper {
+	display: grid;
+	grid-template-columns: 5% [cons] 20% 2% [shop] 60%;
+}
+
+#actualShop {
+	display: grid;
+	grid-template-columns: repeat(8, minmax(70px, 105px));
+	margin-top: 10px;
+	width: calc(105px * 8);
+	border: 3px solid plum;
+	grid-column: shop 2/4;
+	grid-row: 1;
+}
+
+#actualShop > div {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+#actualPotionShop > div > p,
+#actualShop > div > p { margin: 3px; }
+
 #shoptop {
-	position: absolute;
-	top: 0;
-	left: 50%;
-	width: 600px;
-	margin-left: -300px;
 	color: whitesmoke;
-	font-size: 1.2em
+	font-size: 1.2em;
+	margin-top: 15px;
+	margin-bottom: 0;
 }
-#displayquarks {
-	position: absolute;
-	top: 35px;
-	left: 23.25%;
-	width: 600px;
-	margin-left: -268px;
-	color: cyan;
-	text-align: left;
-	font-size: 1.5em;
+
+#actualConsumables {
+	width: calc(130px * 2);
+	grid-column: cons 1/2;
 }
+
+#actualPotionShop {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(70px, 130px));
+	border: 3px solid yellow;
+}
+
+#quarksDisplay {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+#quarkamount {
+	font-size: 1.2em;
+	color: aqua;
+	margin-left: 5px;
+}
+
 #consumables {
-	position: absolute;
-	top: 100px;
-	left: 12%;
-	width: 200px;
-	margin-left: -67px;
 	color: orangered;
 	font-size: 1.2em;
+	margin: 0;
 }
-#consumablesimage{
-	position: absolute;
-	top: 145px;
-	left: 12%;
-	width: 200px;
-	margin-left: -100px;
-	color: white;
-	font-size: 1em;
+
+#shopButtons {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	float: right;
+	margin-right: 12.5%;
+	margin-top: 3px;
 }
+
+#shopButtons > button {
+	width: 150px;
+	height: 40px;
+	margin-left: 5px;
+}
+
+#shopHovers {
+	margin: 4% auto; 
+	width: 600px;
+}
+
+#shopHovers > p { margin: 0; }
+
 .consumablebutton {
 	width: 128px;
 	height: 40px;
@@ -1687,43 +1669,6 @@ nav li {
 .permshopbutton {
 	width: 100px;
 	height: 40px;
-}
-
-
-
-#shopToggles{
-	position: absolute;
-	top: 335px;
-	left: 75%;
-	margin-left: -169px;
-
-}
-#resetShopUpgrades{
-	height: 30px;
-	width: 200px;
-}
-#toggleConfirmShop{
-	height: 30px;
-	width: 150px;
-}
-
-#permshopimage{
-	position: absolute;
-	top: 50px;
-	left: 47%;
-	width: 400px;
-	margin-left: -270px;
-	color: white;
-	font-size: 1em;
-}
-
-#quarkupgradesinfo {
-	position: absolute;
-	top: 380px;
-	left: 50%;
-	width: 600px;
-	margin-left: -300px;
-	text-align: center;
 }
 
 #ants {
@@ -1863,10 +1808,10 @@ nav li {
 #wowCubeSidebar {
 	display: flex;
 	flex-direction: column;
-	width: 20%;
 	margin-left: 4.5%;
-	margin-top: 4.5%;
+	margin-top: 25%;
 	text-align: center;
+	grid-area: sidebar;
 }
 
 #wowCubeSidebarButtons {
@@ -1886,32 +1831,12 @@ nav li {
 #cubeToQuarkTimer { font-size: 1.2em; }
 
 .cubePlacement1{
-	position:absolute;
-	text-align: center;
-	top: 0;
 	font-size: 1.2em;
-	width: 700px;
-	left: 50%;
-	margin-left: -350px;
 }
-.cubePlacement2{
-	position:absolute;
-	text-align: center;
-	top: 30px;
+.cubePlacement2, .cubePlacement3 {
 	font-size: 1.0em;
-	width: 700px;
-	left: 50%;
-	margin-left: -350px;
 }
-.cubePlacement3{
-	position:absolute;
-	text-align: center;
-	top: 50px;
-	font-size: 1.0em;
-	width: 700px;
-	left: 50%;
-	margin-left: -350px;
-}
+
 .cubePlacement4{
 	position: absolute;
 	text-align: center;
@@ -1927,171 +1852,81 @@ nav li {
 	margin-left: -96px;
 }
 .cubeBtn {
-	height: 30px;
-	width: 100px;
-	border: 1px solid gold;
 	color: white;
 	background-color: black;
 }
-#cubeBlessingsTotal{
-	position: absolute;
-	padding: 5px;
-	top: 500px;
-	margin-left: 25%;
-	width: 50%;
-	color: orange;
-	text-align: center;
+
+p[id$="BlessingsTotal"] {
+	padding: 15px;
 }
-#tesseractBlessingsTotal{
-	position: absolute;
-	padding: 5px;
-	top: 500px;
-	margin-left: 25%;
-	width: 50%;
-	color: orchid;
-	text-align: center;
+
+#cubeBlessingsTotal { color: orange; }
+#tesseractBlessingsTotal { color: orchid; }
+#hypercubeBlessingsTotal { color: rgb(255, 0, 76); }
+#platonicBlessingsTotal { color: orange; }
+
+#cubesWrapper {
+	display: grid;
+	grid-template-columns: 4% [sidebar] 20% 4% [tab] 50%;
 }
-#hypercubeBlessingsTotal{
-	position: absolute;
-	padding: 5px;
-	top: 500px;
-	margin-left: 25%;
-	width: 50%;
-	color: rgb(255, 0, 76);
-	text-align: center;
+
+#cubesWrapper > div[id^="cubeTab"] {
+	grid-area: tab;
+	margin-top: 15px;
 }
-#platonicBlessingsTotal{
-	position: absolute;
-	padding: 5px;
-	top: 450px;
-	margin-left: 25%;
-	width: 50%;
-	color:orange;
+
+#cubesWrapper > div[id^="cubeTab"] > p {
 	text-align: center;
+	margin: 2px;
 }
-#open1Cube{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: -96px;
+
+.openGrid {
+	display: grid;
+	grid-template-columns: 64px 700px;
+	grid-template-rows: 32px auto;
 }
-#open20Cube{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: 6px;
+
+.openImage {
+	grid-row: 1/3;
+	grid-column: 1;
 }
-#open1000Cube{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: 108px;
+
+.inventory {
+	grid-row: 1;
+	grid-column: 2;
+	margin: .5% 10px;
 }
-#openMostCube{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: 210px;
+
+.openBtn {
+	grid-row: 2;
+	grid-column: 2;
+	margin-left: 10px;
 }
-#open1Tesseract{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: -96px;
+
+.openBtn > button {
+	width: 100px;
+	height: 30px;
+	border: 1px solid gold;
 }
-#open20Tesseract{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: 6px;
-}
-#open1000Tesseract{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: 108px;
-}
-#open1Hypercube{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: -96px;
-}
-#open20Hypercube{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: 6px;
-}
-#open1000Hypercube{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: 108px;
-}
-#openMostHypercube{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: 210px;
-}
-#openMostTesseract{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: 210px;
-}
-#open1PlatonicCube{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: -96px;
-}
-#open40kPlatonicCube{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: 6px;
-}
-#open1mPlatonicCube{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: 108px;
-}
-#openMostPlatonicCube{
-	position: absolute;
-	text-align: center;
-	top: 128px;
-	left: 40%;
-	margin-left: 210px;
-}
+
 .cubeBonus{
-	position:absolute;
-	top: 170px;
-	left: 30%;
-	margin-left: -16px;
+	margin-left: 2.5%;
+	margin-top: 5px;
 }
-.cubeIcon{
-	position:absolute;
-	padding: 0;
+.cubeIcon {
 	border-spacing: 0;
 }
+
+#cubeTab5Wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 85%;
+	margin-top: 15px;
+}
+
+#cubeTab5Wrapper > p { margin: 2px; }
+
 #cube1Bonus{
 	width: 1500px;
 }
@@ -2101,64 +1936,15 @@ nav li {
 #hypercube1Bonus{
 	width: 1500px;
 }
-#cubeAmount2{
-	position:absolute;
-	padding: 0;
-	top: 20px;
-	left: 50%;
-	width: 1000px;
-	margin-left: -500px;
-	text-align: center;
-	color: white;
-}
+
+#cubeAmount2 { color: white; }
 #cubeUpgradeTable {
-	position:absolute;
-	padding: 0;
-	top: 75px;
-	left: 50%;
-	margin-left: -170px;
-	border-collapse:collapse;
+	border-collapse: collapse;
 	font-size: 0;
 }
-#cubeUpgradeName {
-	position:absolute;
-	top:250px;
-	width:600px;
-	height: 42px;
-	left:50%;
-	margin-left: -300px;
-}
 
-#cubeUpgradeDescription {
-	position: absolute;
-	position:absolute;
-	top:273px;
-	width:500px;
-	height: 42px;
-	left:50%;
-	margin-left: -250px;
-}
-
-#cubeUpgradeCost {
-	position:absolute;
-	top:336px;
-	width: 600px;
-	left: 50%;
-	margin-left: -300px;
-}
-#cubeUpgradeLevel {
-	position:absolute;
-	top:359px;
-	width: 200px;
-	left: 50%;
-	margin-left: -100px;
-}
 #toggleCubeBuy {
-	position:absolute;
-	top:414px;
 	width: 200px;
-	left: 50%;
-	margin-left: -100px;
 	height: 30px;
 }
 
@@ -2252,6 +2038,11 @@ nav li {
 	text-align: center;
 }
 
+#creditssubtab > h1 {
+	font-size: 1.5em;
+	text-align: center;
+}
+
 #creditList {
 	display: grid;
 	grid-template-columns: repeat(4, minmax(250px, 1fr));
@@ -2265,6 +2056,12 @@ nav li {
 
 .credit > a {
 	margin-left: 5px;
+}
+
+#artistList {
+	display: grid;
+	grid-template-columns: repeat(4, 160px);
+	justify-content: center;
 }
 
 #statisticsSubTab {
@@ -2310,22 +2107,6 @@ nav li {
 .constUpgrade{
 	cursor: pointer;
 }
-
-.subtabSwitcher {
-	text-align: left;
-	margin: 9px 0;
-}
-
-.subtabSwitcher > button {
-	display: inline-block;
-	overflow: hidden;
-	height: 30px;
-	width: 150px;
-	text-align: center;
-	/* margins carefully chosen to be as close to buildings tab as possible */
-	margin-left: calc(12% - 154px);
-}
-.subtabSwitcher > button:first-child { margin-left: 8.75%; }
 
 .subtabSwitcher > button.buttonActive {
 	background-color: crimson;
