@@ -5,6 +5,7 @@ import { achievementaward } from './Achievements';
 import { Globals as G } from './Variables';
 import { Player } from './types/Synergism';
 import { Synergism } from './Events';
+import { Alert, Prompt } from './UpdateHTML';
 
 const format24 = new Intl.DateTimeFormat("EN-GB", {
     year: "numeric",
@@ -104,12 +105,13 @@ export const exportSynergism = async () => {
         : 'Savefile copied to file!';
 }
 
-export const resetGame = () => {
+export const resetGame = async () => {
     const a = window.crypto.getRandomValues(new Uint16Array(1))[0] % 16;
     const b = window.crypto.getRandomValues(new Uint16Array(1))[0] % 16;
 
-    if (+prompt(`Answer the question to confirm you'd like to reset: what is ${a}+${b}? (Hint: ${a+b})`) !== a + b) {
-        return;
+    const result = await Prompt(`Answer the question to confirm you'd like to reset: what is ${a}+${b}? (Hint: ${a+b})`)
+    if (+result !== a + b) {
+        return Alert(`Answer was wrong, not resetting!`);
     }
 
     const hold = Object.assign({}, blankSave, {
@@ -122,9 +124,11 @@ export const resetGame = () => {
 export const importSynergism = (input: string) => {
     const d = LZString.decompressFromBase64(input);
     const f: Player = d ? JSON.parse(d) : JSON.parse(atob(input));
+
     if (
         (f.exporttest === "YES!" || f.exporttest === true) ||
-        (f.exporttest === false && isTesting)
+        (f.exporttest === false && isTesting) ||
+        (f.exporttest === 'NO!' && isTesting)
     ) {
         // tested: this does loop over the items before clearing them (Firefox)
         intervalHold.forEach(v => clearInt(v));
@@ -134,11 +138,13 @@ export const importSynergism = (input: string) => {
         constantIntervals();
         createTimer();
         loadSynergy();
+    } else {
+        return Alert(`You are attempting to load a testing file in a non-testing version!`);
     }
 }
 
-export const promocodes = () => {
-    const input = prompt("Got a code? Great! Enter it in (CaSe SeNsItIvE).");
+export const promocodes = async () => {
+    const input = await Prompt('Got a code? Great! Enter it in (CaSe SeNsItIvE).');
     const el = document.getElementById("promocodeinfo");
 
     if (input === "synergism2020" && !player.codes.get(1)) {
@@ -197,7 +203,7 @@ export const promocodes = () => {
         const amount = window.crypto.getRandomValues(new Uint16Array(1))[0] % 16; // [0, 15]
         const first = window.crypto.getRandomValues(new Uint8Array(1))[0];
         const second = window.crypto.getRandomValues(new Uint8Array(1))[0];
-        const addPrompt = prompt(`What is ${first} + ${second}?`);
+        const addPrompt = await Prompt(`What is ${first} + ${second}?`);
 
         if(first + second === +addPrompt) {
             player.worlds += amount;
