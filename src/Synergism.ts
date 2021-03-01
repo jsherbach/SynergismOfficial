@@ -3,12 +3,12 @@ import LZString from 'lz-string';
 
 import { isDecimal, getElementById, sortWithIndeces, sumContents } from './Utility';
 import { blankGlobals, Globals as G } from './Variables';
-import { CalcECC, getChallengeConditions, challengeDisplay, highestChallengeRewards, challengeRequirement, runChallengeSweep } from './Challenges';
+import { CalcECC, getChallengeConditions, challengeDisplay, highestChallengeRewards, challengeRequirement, runChallengeSweep, getMaxChallenges } from './Challenges';
 
 import type { Player } from './types/Synergism';
 import { upgradeupdate, getConstUpgradeMetadata, buyConstantUpgrades } from './Upgrades';
 import { updateResearchBG, maxRoombaResearchIndex, buyResearch } from './Research';
-import { updateChallengeDisplay, revealStuff, showCorruptionStatsLoadouts, CSSAscend, CSSRuneBlessings, updateAchievementBG, updateChallengeLevel, buttoncolorchange, htmlInserts, hideStuff, changeTabColor } from './UpdateHTML';
+import { updateChallengeDisplay, revealStuff, showCorruptionStatsLoadouts, CSSAscend, CSSRuneBlessings, updateAchievementBG, updateChallengeLevel, buttoncolorchange, htmlInserts, hideStuff, changeTabColor, Confirm, Alert } from './UpdateHTML';
 import { calculateHypercubeBlessings } from './Hypercubes';
 import { calculateTesseractBlessings } from './Tesseracts';
 import { calculateCubeBlessings, calculateObtainium, calculateAnts, calculateRuneLevels, calculateOffline, calculateSigmoidExponential, calculateCorruptionPoints, calculateTotalCoinOwned, calculateTotalAcceleratorBoost, dailyResetCheck, calculateOfferings, calculateAcceleratorMultiplier, calculateTimeAcceleration } from './Calculate';
@@ -1007,21 +1007,6 @@ export const loadSynergy = (): void => {
             player.historyShowPerSecond = false;
             player.historyCountMax = 10;
         }
-        if (player.currentChallenge.transcension === undefined) {
-            player.currentChallenge = {
-                transcension: 0,
-                reincarnation: 0,
-                ascension: 0,
-            }
-            /*let challengeCompletionArray = [0, player.challengecompletions.one, player.challengecompletions.two, player.challengecompletions.three, player.challengecompletions.four, player.challengecompletions.five, player.challengecompletions.six, player.challengecompletions.seven, player.challengecompletions.eight, player.challengecompletions.nine, player.challengecompletions.ten, 0, 0, 0, 0, 0]
-            let highestChallengeCompletionArray = [0, player.highestchallengecompletions.one, player.highestchallengecompletions.two, player.highestchallengecompletions.three, player.highestchallengecompletions.four, player.highestchallengecompletions.five, player.highestchallengecompletions.six, player.highestchallengecompletions.seven, player.highestchallengecompletions.eight, player.highestchallengecompletions.nine, player.highestchallengecompletions.ten, 0, 0, 0, 0, 0]
-            player.challengecompletions = []
-            player.highestchallengecompletions = []
-            for (let i = 0; i <= 15; i++) {
-                player.challengecompletions.push(challengeCompletionArray[i])
-                player.highestchallengecompletions.push(highestChallengeCompletionArray[i])
-            }*/
-        }
 
         if (!Number.isInteger(player.ascendBuilding1.cost)) {
             player.ascendBuilding1.cost = 1;
@@ -1300,9 +1285,6 @@ if (player.achievements[102] == 1)document.getElementById("runeshowpower4").text
             document.getElementById('automaticobtainium').textContent = "[LOCKED - Buy Research 3x11]"
         }
 
-        if (player.autoResearchToggle && player.autoResearch > 0.5) {
-            document.getElementById("res" + player.autoResearch).style.backgroundColor = "orange"
-        }
         if (player.autoSacrificeToggle && player.autoSacrifice > 0.5) {
             document.getElementById("rune" + player.autoSacrifice).style.backgroundColor = "orange"
         }
@@ -1336,7 +1318,7 @@ if (player.achievements[102] == 1)document.getElementById("runeshowpower4").text
  * @param long dictates whether or not a given number displays as scientific at 1,000,000. This auto defaults to short if input >= 1e13
  */
 export const format = (input: Decimal | number, accuracy = 0, long = false): string => {
-    if (!(input instanceof Decimal) && typeof input !== 'number') {
+    if (!(input instanceof Decimal) && typeof input !== 'number' || isNaN(input as any)) {
         return '0 [und.]';
     }
 
@@ -2205,26 +2187,31 @@ export const resourceGain = (dt: number): void => {
         player.challengecompletions[1] += 1;
         challengeDisplay(1, false);
         challengeachievementcheck(1, true)
+        updateChallengeLevel(1)
     }
     if (player.researches[72] > 0.5 && player.challengecompletions[2] < (Math.min(player.highestchallengecompletions[2], 25 + 5 * player.researches[67] + 925 * player.researches[105])) && player.coins.gte(Decimal.pow(10, 1.6 * G['challengeBaseRequirements'][1] * Math.pow(1 + player.challengecompletions[2], 2)))) {
         player.challengecompletions[2] += 1
         challengeDisplay(2, false)
         challengeachievementcheck(2, true)
+        updateChallengeLevel(2)
     }
     if (player.researches[73] > 0.5 && player.challengecompletions[3] < (Math.min(player.highestchallengecompletions[3], 25 + 5 * player.researches[68] + 925 * player.researches[105])) && player.coins.gte(Decimal.pow(10, 1.7 * G['challengeBaseRequirements'][2] * Math.pow(1 + player.challengecompletions[3], 2)))) {
         player.challengecompletions[3] += 1
         challengeDisplay(3, false)
         challengeachievementcheck(3, true)
+        updateChallengeLevel(3)
     }
     if (player.researches[74] > 0.5 && player.challengecompletions[4] < (Math.min(player.highestchallengecompletions[4], 25 + 5 * player.researches[69] + 925 * player.researches[105])) && player.coins.gte(Decimal.pow(10, 1.45 * G['challengeBaseRequirements'][3] * Math.pow(1 + player.challengecompletions[4], 2)))) {
         player.challengecompletions[4] += 1
         challengeDisplay(4, false)
         challengeachievementcheck(4, true)
+        updateChallengeLevel(4)
     }
     if (player.researches[75] > 0.5 && player.challengecompletions[5] < (Math.min(player.highestchallengecompletions[5], 25 + 5 * player.researches[70] + 925 * player.researches[105])) && player.coins.gte(Decimal.pow(10, 2 * G['challengeBaseRequirements'][4] * Math.pow(1 + player.challengecompletions[5], 2)))) {
         player.challengecompletions[5] += 1
         challengeDisplay(5, false)
         challengeachievementcheck(5, true)
+        updateChallengeLevel(5)
     }
 
     if (player.coins.gte(1000) && player.unlocks.coinone === false) {
@@ -2350,7 +2337,7 @@ export const resetCurrency = (): void => {
     }
 }
 
-export const resetCheck = (i: string, manual = true, leaving = false): void => {
+export const resetCheck = async (i: string, manual = true, leaving = false): Promise<void> => {
     if (i === 'prestige') {
         if (player.coinsThisPrestige.gte(1e16) || G['prestigePointGain'].gte(100)) {
             if (manual) {
@@ -2374,11 +2361,10 @@ export const resetCheck = (i: string, manual = true, leaving = false): void => {
     }
     if (i === 'challenge') {
         const q = player.currentChallenge.transcension;
-        const x = q + 65
+        const maxCompletions = getMaxChallenges(q);
         if (player.currentChallenge.transcension !== 0) {
             const reqCheck = (comp: number) => player.coinsThisTranscension.gte(challengeRequirement(q, comp, q));
 
-            const maxCompletions = 25 + 5 * player.researches[x] + 925 * player.researches[105];
             if (reqCheck(player.challengecompletions[q]) && player.challengecompletions[q] < maxCompletions) {
                 const maxInc = player.shopUpgrades.instantChallenge > 0 && player.currentChallenge.ascension !== 13 ? 10 : 1; // TODO: Implement the shop upgrade levels here
                 let counter = 0;
@@ -2390,16 +2376,14 @@ export const resetCheck = (i: string, manual = true, leaving = false): void => {
                     counter++;
                 }
                 player.challengecompletions[q] = comp;
-                const y = x - 65
-                challengeDisplay(y, false)
-                updateChallengeLevel(y)
+                challengeDisplay(q, false)
+                updateChallengeLevel(q)
             }
             if (player.challengecompletions[q] > player.highestchallengecompletions[q]) {
                 while (player.challengecompletions[q] > player.highestchallengecompletions[q]) {
                     player.highestchallengecompletions[q] += 1;
-                    const y = x - 65;
-                    challengeDisplay(y, false)
-                    updateChallengeLevel(y)
+                    challengeDisplay(q, false)
+                    updateChallengeLevel(q)
                     highestChallengeRewards(q, player.highestchallengecompletions[q])
                     calculateCubeBlessings();
                 }
@@ -2413,7 +2397,7 @@ export const resetCheck = (i: string, manual = true, leaving = false): void => {
             }
 
         }
-        if (!player.retrychallenges || manual || player.challengecompletions[q] >= (25 + 5 * player.researches[x] + 925 * player.researches[105])) {
+        if (!player.retrychallenges || manual || player.challengecompletions[q] >= (maxCompletions)) {
             player.currentChallenge.transcension = 0;
             updateChallengeDisplay();
         }
@@ -2432,6 +2416,7 @@ export const resetCheck = (i: string, manual = true, leaving = false): void => {
     }
     if (i === "reincarnationchallenge" && player.currentChallenge.reincarnation !== 0) {
         const q = player.currentChallenge.reincarnation;
+        const maxCompletions = getMaxChallenges(q);
         if (player.currentChallenge.transcension !== 0) {
             player.currentChallenge.transcension = 0
         }
@@ -2442,7 +2427,6 @@ export const resetCheck = (i: string, manual = true, leaving = false): void => {
                 return player.coins.gte(challengeRequirement(q, comp, q))
             }
         }
-        const maxCompletions = 25 + 5 * player.cubeUpgrades[29] + 2 * player.shopUpgrades.challengeExtension + 5 * player.platonicUpgrades[5] + 5 * player.platonicUpgrades[10] + 10 * player.platonicUpgrades[15];
         if (reqCheck(player.challengecompletions[q]) && player.challengecompletions[q] < maxCompletions) {
             const maxInc = player.shopUpgrades.instantChallenge > 0 && player.currentChallenge.ascension !== 13 ? 10 : 1; // TODO: Implement the shop upgrade levels here
             let counter = 0;
@@ -2496,7 +2480,7 @@ export const resetCheck = (i: string, manual = true, leaving = false): void => {
     if (i === "ascensionChallenge" && player.currentChallenge.ascension !== 0) {
         let conf = true
         if (manual) {
-            conf = confirm('Are you absolutely sure that you want to exit the Ascension Challenge? You will need to clear challenge 10 again before you can attempt the challenge again!')
+            conf = await Confirm('Are you absolutely sure that you want to exit the Ascension Challenge? You will need to clear challenge 10 again before you can attempt the challenge again!')
         }
         if (!conf) {
             return;
@@ -2509,7 +2493,7 @@ export const resetCheck = (i: string, manual = true, leaving = false): void => {
             achievementaward(247)
         }
 
-        const maxCompletions = a < 15 ? 30 + 3 * player.platonicUpgrades[5] + 3 * player.platonicUpgrades[10] + 4 * player.platonicUpgrades[15] : 1;
+        const maxCompletions = getMaxChallenges(a)
         if (a !== 0 && a < 15) {
             if (player.challengecompletions[10] >= challengeRequirement(a, player.challengecompletions[a], a) && player.challengecompletions[a] < maxCompletions) {
                 player.challengecompletions[a] += 1;
@@ -2550,10 +2534,10 @@ export const resetCheck = (i: string, manual = true, leaving = false): void => {
     }
 }
 
-export const resetConfirmation = (i: string): void => {
+export const resetConfirmation = async (i: string): Promise<void> => {
     if (i === 'prestige') {
         if (player.toggles[28] === true) {
-            const r = confirm("Prestige will reset coin upgrades, coin producers AND crystals. The first prestige unlocks new features. Would you like to prestige? [Toggle this message in settings.]")
+            const r = await Confirm("Prestige will reset coin upgrades, coin producers AND crystals. The first prestige unlocks new features. Would you like to prestige? [Toggle this message in settings.]")
             if (r === true) {
                 resetachievementcheck(1);
                 reset("prestige");
@@ -2565,7 +2549,7 @@ export const resetConfirmation = (i: string): void => {
     }
     if (i === 'transcend') {
         if (player.toggles[29] === true) {
-            const z = confirm("Transcends will reset coin and prestige upgrades, coin producers, crystal producers AND diamonds. The first transcension unlocks new features. Would you like to prestige? [Toggle this message in settings.]")
+            const z = await Confirm("Transcends will reset coin and prestige upgrades, coin producers, crystal producers AND diamonds. The first transcension unlocks new features. Would you like to prestige? [Toggle this message in settings.]")
             if (z === true) {
                 resetachievementcheck(2);
                 reset("transcension");
@@ -2578,7 +2562,7 @@ export const resetConfirmation = (i: string): void => {
     if (i === 'reincarnate') {
         if (player.currentChallenge.ascension !== 12) {
             if (player.toggles[30] === true) {
-                const z = confirm("Reincarnating will reset EVERYTHING but in return you will get extraordinarily powerful Particles, and unlock some very strong upgrades and some new features. would you like to Reincarnate? [Disable this message in settings]")
+                const z = await Confirm("Reincarnating will reset EVERYTHING but in return you will get extraordinarily powerful Particles, and unlock some very strong upgrades and some new features. would you like to Reincarnate? [Disable this message in settings]")
                 if (z === true) {
                     resetachievementcheck(3);
                     reset("reincarnation");
@@ -2590,7 +2574,8 @@ export const resetConfirmation = (i: string): void => {
         }
     }
     if (i === 'ascend') {
-        const z = !player.toggles[31] || confirm("Ascending will reset all buildings, rune levels [NOT CAP!], talismans, most researches, and the anthill feature for Cubes of Power. Continue? [It is strongly advised you get R5x24 first.]")
+        const z = !player.toggles[31] || 
+                  await Confirm("Ascending will reset all buildings, rune levels [NOT CAP!], talismans, most researches, and the anthill feature for Cubes of Power. Continue? [It is strongly advised you get R5x24 first.]")
         if (z) {
             reset("ascension");
         }
@@ -3333,7 +3318,7 @@ document.addEventListener('keydown', (event) => {
 
 });
 
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
     if (location.href.includes('kong')) {
         // kongregate
         const script = document.createElement('script');
@@ -3351,7 +3336,7 @@ window.addEventListener('load', () => {
     if (isLZString) {
         localStorage.clear();
         localStorage.setItem('Synergysave2', btoa(dec));
-        alert('Transferred save to new format successfully!');
+        await Alert('Transferred save to new format successfully!');
     }
 
     corruptionButtonsAdd();

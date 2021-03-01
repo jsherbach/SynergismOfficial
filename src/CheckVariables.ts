@@ -1,12 +1,39 @@
-import { player, format, resetCheck, isTesting} from './Synergism';
+import { player, format, resetCheck, isTesting, blankSave} from './Synergism';
 import { Player } from './types/Synergism';
 import Decimal from 'break_infinity.js';
 import { calculateMaxRunes, calculateTimeAcceleration } from './Calculate';
 import { buyResearch } from './Research';
 import { c15RewardUpdate } from './Statistics';
 import { LegacyShopUpgrades } from './types/LegacySynergism';
+import { padArray } from './Utility';
 
+/**
+ * Given player data, it checks, on load if variables are undefined
+ * or set incorrectly, and corrects it. This should be where all new
+ * variable declarations for `player` should go!
+ * @param data 
+ */
 export const checkVariablesOnLoad = (data: Player) => {
+    if (player.currentChallenge.transcension === undefined) {
+        player.currentChallenge = {
+            transcension: 0,
+            reincarnation: 0,
+            ascension: 0,
+        }
+    }
+
+    // backwards compatibility for v1.0101 (and possibly older) saves
+    if (!Array.isArray(data.challengecompletions)) {
+        player.challengecompletions = Object.values(data.challengecompletions);
+        padArray(player.challengecompletions, 0, blankSave.challengecompletions.length);
+    }
+
+    // backwards compatibility for v1.0101 (and possibly older) saves
+    if (!Array.isArray(data.highestchallengecompletions)) {
+        // if highestchallengecompletions is every added onto, this will need to be padded.
+        player.highestchallengecompletions = Object.values(data.highestchallengecompletions);
+    }
+
     if (data.wowCubes === undefined) {
         player.wowCubes = 0;
         player.wowTesseracts = 0;
@@ -270,9 +297,8 @@ export const checkVariablesOnLoad = (data: Player) => {
         player.exporttest = !isTesting;
     }
 
-    
     const shop = data.shopUpgrades as LegacyShopUpgrades | Player['shopUpgrades'];
-    if ('offeringTimerLevel' in shop && typeof shop.offeringTimerLevel !== 'undefined') {
+    if (shop && 'offeringTimerLevel' in shop && typeof shop.offeringTimerLevel !== 'undefined') {
         player.shopUpgrades = {
             offeringPotion: shop.offeringPotion,
             obtainiumPotion: shop.obtainiumPotion,
@@ -291,14 +317,7 @@ export const checkVariablesOnLoad = (data: Player) => {
             tesseractToQuark: Number(shop.tesseractToQuarkBought),
             hypercubeToQuark: Number(shop.hypercubeToQuarkBought),
         }
-        /* Note to Khafra: This fix is utter crap i'm sorry but it was like 2 in the morning and
-        I was depressed when writing it thanks for your understanding.
-        -platonic */
-        /* Edit at 2 AM: This is actually worse of a fix than I originally considered but right now I'm
-        creatively bankrupt and can't really think straight right now. However maybe my scribblings can
-        help inspire a solution to the shop problem? I don't know but maybe -Plato */
-        // This is supposed to work within the above definition but it defaults to undefined because of type matching.
-        player.shopUpgrades.challengeTome = data.shopUpgrades.challengeTome
+
         const initialQuarks = player.worlds;
 
         player.worlds += 150 * shop.offeringTimerLevel + 25/2 * (shop.offeringTimerLevel - 1) * (shop.offeringTimerLevel);
@@ -307,7 +326,9 @@ export const checkVariablesOnLoad = (data: Player) => {
         player.worlds += 150 * shop.obtainiumAutoLevel + 25/2 * (shop.obtainiumAutoLevel - 1) * (shop.obtainiumAutoLevel);
         player.worlds += 100 * shop.cashGrabLevel + 100/2 * (shop.cashGrabLevel - 1) * (shop.cashGrabLevel);
         player.worlds += 200 * shop.antSpeedLevel + 80/2 * (shop.antSpeedLevel - 1) * (shop.antSpeedLevel);
-        player.worlds += 500 * shop.seasonPassLevel + 250/2 * (shop.seasonPassLevel - 1) * (shop.seasonPassLevel);
+        player.worlds += typeof shop.seasonPass === 'number' 
+            ? 500 * shop.seasonPass + 250/2 * (shop.seasonPass - 1) * shop.seasonPass
+            : 500 * shop.seasonPassLevel + 250/2 * (shop.seasonPassLevel - 1) * shop.seasonPassLevel;
 
         console.log('Because of the v2.5.0 update, you have been refunded ' + format(player.worlds - initialQuarks) + ' Quarks! If this appears wrong let Platonic know :)')
     }

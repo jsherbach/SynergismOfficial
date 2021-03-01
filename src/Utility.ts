@@ -70,3 +70,26 @@ export const stripIndents = (temp: TemplateStringsArray, ...args: ValidInterpola
 
     return f.trim();
 }
+
+/**
+ * Pads an array (a) with param (b) (c) times
+ * @param a array to be padded
+ * @param b item to pad to array
+ * @param length Length to pad array to
+ */
+export const padArray = <T extends any>(a: T[], b: T, length: number) => {
+    for (let i = 0; i < length; i++)
+        if (!(i in a)) a[i] = b;
+
+    return a;
+} 
+
+export const updateClassList = (targetElement: string, additions: Array<string>, removals: Array<string>) => {
+    const target = document.getElementById(targetElement);
+    for (const addition of additions) {
+        target.classList.add(addition);
+    }
+    for (const removal of removals) {
+        target.classList.remove(removal);
+    }
+}

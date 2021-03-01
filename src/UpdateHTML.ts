@@ -5,6 +5,7 @@ import { CalcCorruptionStuff, calculateTimeAcceleration } from './Calculate';
 import { achievementaward, totalachievementpoints } from './Achievements';
 import { displayRuneInformation } from './Runes';
 import { visualUpdateBuildings, visualUpdateUpgrades, visualUpdateAchievements, visualUpdateRunes, visualUpdateChallenges, visualUpdateResearch, visualUpdateSettings, visualUpdateShop, visualUpdateAnts, visualUpdateCubes, visualUpdateCorruptions } from './UpdateVisuals';
+import { getMaxChallenges } from './Challenges';
 
 export const revealStuff = () => {
     const example = document.getElementsByClassName("coinunlock1") as HTMLCollectionOf<HTMLElement>;
@@ -343,33 +344,33 @@ export const revealStuff = () => {
 export const hideStuff = () => {
 
     document.getElementById("buildings").style.display = "none"
-    document.getElementById("buildingstab").style.backgroundColor = "#171717";
+    document.getElementById("buildingstab").style.backgroundColor = "";
     document.getElementById("upgrades").style.display = "none"
-    document.getElementById("upgradestab").style.backgroundColor = "#171717"
+    document.getElementById("upgradestab").style.backgroundColor = ""
     document.getElementById("settings").style.display = "none"
 
     const settingsTab = document.getElementById("settingstab");
     if (settingsTab.getAttribute('full') === '0') {
-        settingsTab.style.backgroundColor = "#171717"
+        settingsTab.style.backgroundColor = ""
         settingsTab.style.color = "white"
         settingsTab.style.border = '1px solid white';
     }
 
     document.getElementById("statistics").style.display = "none"
-    document.getElementById("achievementstab").style.backgroundColor = "#171717"
+    document.getElementById("achievementstab").style.backgroundColor = ""
     document.getElementById("achievementstab").style.color = "white"
     document.getElementById("runes").style.display = "none"
-    document.getElementById("runestab").style.backgroundColor = "#171717"
+    document.getElementById("runestab").style.backgroundColor = ""
     document.getElementById("challenges").style.display = "none"
-    document.getElementById("challengetab").style.backgroundColor = "#171717"
+    document.getElementById("challengetab").style.backgroundColor = ""
     document.getElementById("research").style.display = "none"
-    document.getElementById("researchtab").style.backgroundColor = "#171717"
+    document.getElementById("researchtab").style.backgroundColor = ""
     document.getElementById("shop").style.display = "none"
-    document.getElementById("shoptab").style.backgroundColor = "purple"
+    document.getElementById("shoptab").style.backgroundColor = ""
     document.getElementById("ants").style.display = "none"
-    document.getElementById("anttab").style.backgroundColor = "#171717"
-    document.getElementById("cubetab").style.backgroundColor = "#171717"
-    document.getElementById("traitstab").style.backgroundColor = "#171717"
+    document.getElementById("anttab").style.backgroundColor = ""
+    document.getElementById("cubetab").style.backgroundColor = ""
+    document.getElementById("traitstab").style.backgroundColor = ""
     document.getElementById("cubes").style.display = "none"
     document.getElementById("traits").style.display = "none"
 
@@ -516,30 +517,30 @@ export const buttoncolorchange = () => {
         const f = document.getElementById("buyaccelerator");
         const g = document.getElementById("buymultiplier");
         const h = document.getElementById("buyacceleratorboost");
-        ((!player.toggles[1] || player.upgrades[81] === 0) && player.coins.gte(player.firstCostCoin)) ?
-            a.style.backgroundColor = "#555555" :
-            a.style.backgroundColor = "#171717";
-        ((!player.toggles[2] || player.upgrades[82] === 0) && player.coins.gte(player.secondCostCoin)) ?
-            b.style.backgroundColor = "#555555" :
-            b.style.backgroundColor = "#171717";
-        ((!player.toggles[3] || player.upgrades[83] === 0) && player.coins.gte(player.thirdCostCoin)) ?
-            c.style.backgroundColor = "#555555" :
-            c.style.backgroundColor = "#171717";
-        ((!player.toggles[4] || player.upgrades[84] === 0) && player.coins.gte(player.fourthCostCoin)) ?
-            d.style.backgroundColor = "#555555" :
-            d.style.backgroundColor = "#171717";
-        ((!player.toggles[5] || player.upgrades[85] === 0) && player.coins.gte(player.fifthCostCoin)) ?
-            e.style.backgroundColor = "#555555" :
-            e.style.backgroundColor = "#171717";
-        ((!player.toggles[6] || player.upgrades[86] === 0) && player.coins.gte(player.acceleratorCost)) ?
-            f.style.backgroundColor = "#555555" :
-            f.style.backgroundColor = "#171717";
-        ((!player.toggles[7] || player.upgrades[87] === 0) && player.coins.gte(player.multiplierCost)) ?
-            g.style.backgroundColor = "#555555" :
-            g.style.backgroundColor = "#171717";
-        ((!player.toggles[8] || player.upgrades[88] === 0) && player.prestigePoints.gte(player.acceleratorBoostCost)) ?
-            h.style.backgroundColor = "#555555" :
-            h.style.backgroundColor = "#171717";
+        ((!player.toggles[1] || player.upgrades[81] === 0) && player.coins.gte(player.firstCostCoin))
+            ? a.classList.add("buildingPurchaseBtnAvailable")
+            : a.classList.remove("buildingPurchaseBtnAvailable");
+        ((!player.toggles[2] || player.upgrades[82] === 0) && player.coins.gte(player.secondCostCoin))
+            ? b.classList.add("buildingPurchaseBtnAvailable")
+            : b.classList.remove("buildingPurchaseBtnAvailable");
+        ((!player.toggles[3] || player.upgrades[83] === 0) && player.coins.gte(player.thirdCostCoin))
+            ? c.classList.add("buildingPurchaseBtnAvailable")
+            : c.classList.remove("buildingPurchaseBtnAvailable");
+        ((!player.toggles[4] || player.upgrades[84] === 0) && player.coins.gte(player.fourthCostCoin))
+            ? d.classList.add("buildingPurchaseBtnAvailable")
+            : d.classList.remove("buildingPurchaseBtnAvailable");
+        ((!player.toggles[5] || player.upgrades[85] === 0) && player.coins.gte(player.fifthCostCoin))
+            ? e.classList.add("buildingPurchaseBtnAvailable")
+            : e.classList.remove("buildingPurchaseBtnAvailable");
+        ((!player.toggles[6] || player.upgrades[86] === 0) && player.coins.gte(player.acceleratorCost))
+            ? f.classList.add("buildingPurchaseBtnAvailable")
+            : f.classList.remove("buildingPurchaseBtnAvailable");
+        ((!player.toggles[7] || player.upgrades[87] === 0) && player.coins.gte(player.multiplierCost))
+            ? g.classList.add("buildingPurchaseBtnAvailable")
+            : g.classList.remove("buildingPurchaseBtnAvailable");
+        ((!player.toggles[8] || player.upgrades[88] === 0) && player.prestigePoints.gte(player.acceleratorBoostCost))
+            ? h.classList.add("buildingPurchaseBtnAvailable")
+            : h.classList.remove("buildingPurchaseBtnAvailable");
     }
 
     if (G['currentTab'] === "buildings" && G['buildingSubTab'] === "diamond") {
@@ -553,11 +554,21 @@ export const buttoncolorchange = () => {
         const h = document.getElementById("buycrystalupgrade3");
         const i = document.getElementById("buycrystalupgrade4");
         const j = document.getElementById("buycrystalupgrade5");
-        ((!player.toggles[10] || player.achievements[78] === 0) && player.prestigePoints.gte(player.firstCostDiamonds)) ? a.style.backgroundColor = "#555555" : a.style.backgroundColor = "#171717";
-        ((!player.toggles[11] || player.achievements[85] === 0) && player.prestigePoints.gte(player.secondCostDiamonds)) ? b.style.backgroundColor = "#555555" : b.style.backgroundColor = "#171717";
-        ((!player.toggles[12] || player.achievements[92] === 0) && player.prestigePoints.gte(player.thirdCostDiamonds)) ? c.style.backgroundColor = "#555555" : c.style.backgroundColor = "#171717";
-        ((!player.toggles[13] || player.achievements[99] === 0) && player.prestigePoints.gte(player.fourthCostDiamonds)) ? d.style.backgroundColor = "#555555" : d.style.backgroundColor = "#171717";
-        ((!player.toggles[14] || player.achievements[106] === 0) && player.prestigePoints.gte(player.fifthCostDiamonds)) ? e.style.backgroundColor = "#555555" : e.style.backgroundColor = "#171717";
+        ((!player.toggles[10] || player.achievements[78] === 0) && player.prestigePoints.gte(player.firstCostDiamonds))
+            ? a.classList.add("buildingPurchaseBtnAvailable")
+            : a.classList.remove("buildingPurchaseBtnAvailable");
+        ((!player.toggles[11] || player.achievements[85] === 0) && player.prestigePoints.gte(player.secondCostDiamonds))
+            ? b.classList.add("buildingPurchaseBtnAvailable")
+            : b.classList.remove("buildingPurchaseBtnAvailable");
+        ((!player.toggles[12] || player.achievements[92] === 0) && player.prestigePoints.gte(player.thirdCostDiamonds))
+            ? c.classList.add("buildingPurchaseBtnAvailable")
+            : c.classList.remove("buildingPurchaseBtnAvailable");
+        ((!player.toggles[13] || player.achievements[99] === 0) && player.prestigePoints.gte(player.fourthCostDiamonds))
+            ? d.classList.add("buildingPurchaseBtnAvailable")
+            : d.classList.remove("buildingPurchaseBtnAvailable");
+        ((!player.toggles[14] || player.achievements[106] === 0) && player.prestigePoints.gte(player.fifthCostDiamonds))
+            ? e.classList.add("buildingPurchaseBtnAvailable")
+            : e.classList.remove("buildingPurchaseBtnAvailable");
         let k = 0;
         k += Math.floor(G['rune3level'] / 16 * G['effectiveLevelMult']) * 100 / 100
         if (player.upgrades[73] === 1 && player.currentChallenge.reincarnation !== 0) {
@@ -574,7 +585,9 @@ export const buttoncolorchange = () => {
     if (G['currentTab'] === "runes") {
         if (G['runescreen'] === "runes") {
             for (let i = 1; i <= 5; i++) {
-                player.runeshards > 0.5 ? document.getElementById("activaterune" + i).style.backgroundColor = "purple" : document.getElementById("activaterune" + i).style.backgroundColor = "#171717";
+                player.runeshards > 0.5
+                    ? document.getElementById(`activaterune${i}`).classList.add("runeButtonAvailable")
+                    : document.getElementById(`activaterune${i}`).classList.remove("runeButtonAvailable")
             }
         }
         if (G['runescreen'] === "talismans") {
@@ -587,8 +600,9 @@ export const buttoncolorchange = () => {
             const g = document.getElementById("buyTalismanItem7");
             const arr = [a, b, c, d, e, f, g];
             for (let i = 0; i < arr.length; i++) {
-                arr[i].style.backgroundColor = (player.researchPoints > G['talismanResourceObtainiumCosts'][i]
-                    && player.runeshards > G['talismanResourceOfferingCosts'][i]) ? "purple" : "#171717"
+                (player.researchPoints > G['talismanResourceObtainiumCosts'][i] && player.runeshards > G['talismanResourceOfferingCosts'][i])
+                    ? arr[i].classList.add("talisminBtnAvailable")
+                    : arr[i].classList.remove("talisminBtnAvailable")
             }
         }
     }
@@ -598,8 +612,8 @@ export const buttoncolorchange = () => {
             const toggle = player.toggles[i + 15];
             const mythos = player[`${G['ordinals'][i - 1]}CostMythos`];
             (!toggle || !player.upgrades[93 + i]) && player.transcendPoints.gte(mythos) 
-                ? document.getElementById('buymythos' + i).style.backgroundColor = "#555555" 
-                : document.getElementById('buymythos' + i).style.backgroundColor = "#171717"
+                ? document.getElementById(`buymythos${i}`).classList.add("buildingPurchaseBtnAvailable")
+                : document.getElementById(`buymythos${i}`).classList.remove("buildingPurchaseBtnAvailable");
         }
     }
 
@@ -607,17 +621,17 @@ export const buttoncolorchange = () => {
         for (let i = 1; i <= 5; i++) {
             const costParticles = player[G['ordinals'][i - 1] + 'CostParticles'] as Decimal;
             player.reincarnationPoints.gte(costParticles) 
-                ? document.getElementById("buyparticles" + i).style.backgroundColor = "#555555" 
-                : document.getElementById("buyparticles" + i).style.backgroundColor = "#171717";
+                ? document.getElementById(`buyparticles${i}`).classList.add("buildingPurchaseBtnAvailable")
+                : document.getElementById(`buyparticles${i}`).classList.remove("buildingPurchaseBtnAvailable");
         }
     }
 
     if (G['currentTab'] === "buildings" && G['buildingSubTab'] === "tesseract") {
         for (let i = 1; i <= 5; i++) {
             const ascendBuilding = player['ascendBuilding' + i]['cost'] as number;
-            player.wowTesseracts >= ascendBuilding ?
-                document.getElementById('buyTesseracts' + i).style.backgroundColor = "#555555" :
-                document.getElementById('buyTesseracts' + i).style.backgroundColor = "#171717";
+            player.wowTesseracts >= ascendBuilding
+                ? document.getElementById(`buyTesseracts${i}`).classList.add("buildingPurchaseBtnAvailable")
+                : document.getElementById(`buyTesseracts${i}`).classList.remove("buildingPurchaseBtnAvailable");
         }
         for (let i = 1; i <= 8; i++) {
             (player.ascendShards.gte(Decimal.pow(10, player.constantUpgrades[i]).times(G['constUpgradeCosts'][i]))) ?
@@ -632,19 +646,17 @@ export const buttoncolorchange = () => {
     }
 
     if (G['currentTab'] === "ants") {
-        (player.reincarnationPoints.gte(player.firstCostAnts)) ? document.getElementById("anttier1").style.backgroundColor = "white" : document.getElementById("anttier1").style.backgroundColor = "#171717";
+        (player.reincarnationPoints.gte(player.firstCostAnts)) ? document.getElementById(`anttier1`).classList.add("antTierBtnAvailable") : document.getElementById(`anttier1`).classList.remove("antTierBtnAvailable");
         for (let i = 2; i <= 8; i++) {
             const costAnts = player[G['ordinals'][i - 1] + 'CostAnts'] as Decimal | number;
-            player.antPoints.gte(costAnts) 
-                ? document.getElementById("anttier" + i).style.backgroundColor = "white" 
-                : document.getElementById("anttier" + i).style.backgroundColor = "#171717";
+            player.antPoints.gte(costAnts)
+                ? document.getElementById(`anttier${i}`).classList.add("antTierBtnAvailable")
+                : document.getElementById(`anttier${i}`).classList.remove("antTierBtnAvailable")
         }
         for (let i = 1; i <= 12; i++) {
-            if (player.antPoints.gte(Decimal.pow(G['antUpgradeCostIncreases'][i-1], player.antUpgrades[i-1] * G['extinctionMultiplier'][player.usedCorruptions[10]]).times(G['antUpgradeBaseCost'][i-1]))) {
-                document.getElementById("antUpgrade" + i).style.backgroundColor = "silver"
-            } else {
-                document.getElementById("antUpgrade" + i).style.backgroundColor = "#171717";
-            }
+            player.antPoints.gte(Decimal.pow(G['antUpgradeCostIncreases'][i-1], player.antUpgrades[i-1] * G['extinctionMultiplier'][player.usedCorruptions[10]]).times(G['antUpgradeBaseCost'][i-1]))
+                ? document.getElementById(`antUpgrade${i}`).classList.add("antUpgradeBtnAvailable")
+                : document.getElementById(`antUpgrade${i}`).classList.remove("antUpgradeBtnAvailable")
         }
     }
 }
@@ -681,41 +693,7 @@ export const updateChallengeDisplay = () => {
 
 export const updateChallengeLevel = (k: number) => {
     const el = document.getElementById("challenge" + k + "level");
-    let maxChallenges = 0;
-
-    switch (k) {
-        case 1: 
-            maxChallenges = 25 + 5 * player.researches[66] + 925 * player.researches[105]
-            break;
-        case 2:
-            maxChallenges = 25 + 5 * player.researches[67] + 925 * player.researches[105]
-            break;
-        case 3:
-            maxChallenges = 25 + 5 * player.researches[68] + 925 * player.researches[105]
-            break;
-        case 4:
-            maxChallenges = 25 + 5 * player.researches[69] + 925 * player.researches[105]
-            break;
-        case 5:
-            maxChallenges = 25 + 5 * player.researches[70] + 925 * player.researches[105]
-            break;
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-            maxChallenges = 25 + 5 * player.cubeUpgrades[29] + 2 * player.shopUpgrades.challengeExtension + 5 * player.platonicUpgrades[5] + 5 * player.platonicUpgrades[10] + 10 * player.platonicUpgrades[15];
-            break;
-        case 11:
-        case 12:
-        case 13:
-        case 14:
-            maxChallenges = 30 + 3 * player.platonicUpgrades[5] + 3 * player.platonicUpgrades[10] + 4 * player.platonicUpgrades[15]
-            break;
-        case 15:
-            maxChallenges = 9001;
-            break;
-    }
+    let maxChallenges = getMaxChallenges(k);
 
     el.textContent = `${player.challengecompletions[k]} / ${maxChallenges}`;
 }
@@ -781,7 +759,7 @@ export const CSSRuneBlessings = () => {
         a.style.left = b.style.left = "10%"
 
         c.style.top = d.style.top = (23 + 75 * i) + "px"
-        c.style.left = d.style.left = "15%"
+        c.style.left = d.style.left = "16%"
 
         e.style.top = f.style.top = (36 + 75 * i) + "px"
         e.style.left = f.style.left = "32%"
@@ -842,4 +820,70 @@ export const changeTabColor = () => {
     const color = tabColors[G['currentTab']] ?? 'yellow';
 
     tab.style.backgroundColor = color;
+}
+
+export const Confirm = (text: string) => {
+    const conf = document.getElementById('confirmationBox');
+    const confWrap = document.getElementById('confirmWrapper');
+    const popup = document.querySelector('#confirm');
+    const ok = popup.querySelector<HTMLElement>('#ok_confirm');
+    const cancel = popup.querySelector<HTMLElement>('#cancel_confirm');
+    
+    conf.style.display = 'block';
+    confWrap.style.display = 'block';
+    popup.querySelector('p').textContent = text;
+
+    return new Promise<boolean>((res) => {
+        ok.onclick = () => res(true);
+        cancel.onclick = () => res(false);
+    })
+    .finally(() => {
+        ok.onclick = null;
+        cancel.onclick = null;
+        conf.style.display = 'none';
+        confWrap.style.display = 'none';
+    });
+}
+
+export const Alert = (text: string) => {
+    const conf = document.getElementById('confirmationBox');
+    const alertWrap = document.getElementById('alertWrapper');
+    const popup = document.querySelector('#alert');
+    const ok = popup.querySelector<HTMLElement>('#ok_alert');
+    
+    conf.style.display = 'block';
+    alertWrap.style.display = 'block';
+    popup.querySelector('p').textContent = text;
+
+    return new Promise<undefined>((res) => {
+        ok.onclick = () => res(undefined);
+    })
+    .finally(() => {
+        ok.onclick = null;
+        conf.style.display = 'none';
+        alertWrap.style.display = 'none';
+    });
+}
+
+export const Prompt = (text: string) => {
+    const conf = document.getElementById('confirmationBox');
+    const confWrap = document.getElementById('promptWrapper');
+    const popup = document.querySelector('#prompt');
+    const ok = popup.querySelector<HTMLElement>('#ok_prompt');
+    const cancel = popup.querySelector<HTMLElement>('#cancel_prompt');
+    
+    conf.style.display = 'block';
+    confWrap.style.display = 'block';
+    popup.querySelector('label').textContent = text;
+
+    return new Promise<string | null>((res) => {
+        ok.onclick = (e) => res((e.target as HTMLButtonElement).parentNode.querySelector('input').value);
+        cancel.onclick = () => res(null);
+    })
+    .finally(() => {
+        ok.onclick = null;
+        cancel.onclick = null;
+        conf.style.display = 'none';
+        confWrap.style.display = 'none';
+    });
 }
